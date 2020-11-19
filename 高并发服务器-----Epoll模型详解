@@ -54,20 +54,16 @@ EPOLL_CTL_DEL(从epfd删除一个fd)
 
 结构体如下：
 struct epoll_event {
-   
-   
-__uint32_t events; 宏定义读和写EPOLLIN读EPOLLOUT写
-epoll_data_t data; 联合体
+	__uint32_t events; 宏定义读和写EPOLLIN读EPOLLOUT写
+	epoll_data_t data; 联合体
 };
-联合体如下：
 
+联合体如下：
 typedef union epoll_data {
-   
-   
-void *ptr;
-int fd;
-__uint32_t u32;
-__uint64_t u64;
+	void *ptr;
+	int fd;
+	__uint32_t u32;
+	__uint64_t u64;
 } epoll_data_t;
 
 返回值：成功返回0,不成功返回-1
@@ -109,8 +105,6 @@ const int  MAXEPOLLSIZE = 10;
 
 class Epoll
 {
-   
-   
    public:
        Epoll();
        bool Add(int fd,int eventsOption);//添加事件
@@ -129,7 +123,6 @@ class Epoll
         struct epoll_event event;//事件
         struct epoll_event events[MAXEPOLLSIZE];
         struct rlimit  rt;
-
 };
 源文件
 
@@ -140,12 +133,8 @@ class Epoll
 
 Epoll::Epoll():fdNumber(0)
 {
-   
-   
     rt.rlim_max= rt.rlim_cur = MAXEPOLLSIZE; 
     if(::setrlimit(RLIMIT_NOFILE,&rt) == -1){
-   
-   
         std::cout << "setlimit failed\n";
         exit(1);
     }
@@ -156,13 +145,9 @@ Epoll::Epoll():fdNumber(0)
 
 bool Epoll::Add(int fd,int eventsOption)//把监听到的fd放到epoll句柄里面
 {
-   
-   
      event.data.fd = fd;
      event.events = eventsOption; //EPOLLIN | EPOLLET
      if(epoll_ctl(epollfd,EPOLL_CTL_ADD,fd,&event) < 0){
-   
-   
          return false;
      }
 
@@ -173,48 +158,35 @@ bool Epoll::Add(int fd,int eventsOption)//把监听到的fd放到epoll句柄里�
 
 bool Epoll::Del(int fd)
 {
-   
-   
 	event.data.fd = fd;
 	event.events = EPOLLIN | EPOLLET;
 	int ret = epoll_ctl(epollfd, EPOLL_CTL_DEL,fd, &event);
 	if (ret<0)
 	{
-   
-   
 		return false;
-     }
+        }
 	close(event.data.fd);
 	printf("client is close ,fd = %d\n", event.data.fd);
 	return true;
 }
 int Epoll::Wait()
 {
-   
-   
     int eventNumber;//初始化事件响应数量
     eventNumber = epoll_wait(epollfd,events,fdNumber,-1);
     if(eventNumber < 0){
-   
-   
         std::cout << "epoll_wait  failed \n";
         exit(1);
     }
     return eventNumber;
 }
 
-
 int Epoll::GetEventOccurfd(const int eventIndex) const
 {
-   
-   
     return events[eventIndex].data.fd;
 }
 
 int Epoll::GetEvents(const int eventIndex) const
 {
-   
-   
     return events[eventIndex].events;
 }
 
@@ -348,9 +320,7 @@ int main(int argc,char* argv[])
 	memset(wbuf,0,1024);
 	printf("please input\n"); 
 	while(1)
-	{
-   
-   			   		  
+	{	  
 		fgets(wbuf, 100, stdin);//stdin 意思是键盘输入
 		write(sfd,wbuf,sizeof(wbuf));	
 		memset(wbuf,0,1024);					 
